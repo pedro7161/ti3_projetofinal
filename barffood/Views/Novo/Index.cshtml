@@ -1,0 +1,120 @@
+﻿@model IEnumerable<barffood.Models.Food>
+@using System.IO;
+@using System.Text;
+@using System.Data;
+@using iTextSharp.text;
+@using iTextSharp.text.pdf;
+@using iTextSharp.text.html.simpleparser;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+@if (User.IsInRole("Admin"))
+{
+<p>
+    @Html.ActionLink("Create New", "AddFood", "Novo")
+    @Html.ActionLink("Convert View To PDF", "PrintViewToPdf","pdfconvert")
+</p>
+}
+
+<div id="dvTable">
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.data_validade)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.time_remain)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.foto)
+        </th>
+        <th>
+            Animal
+        </th>
+        <th>
+            Raça
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.url)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.data_validade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.time_remain)
+            </td>
+            <td>
+                @{
+                    if (String.IsNullOrEmpty(item.foto))
+                    {
+
+                        <img width="80" src="@Url.Content("~/fotos/nofoto.png")" alt="erro" />
+
+                    }
+                    else
+                    {
+
+                        if (String.IsNullOrEmpty(item.url))
+                        {
+                            <img width="80" src="@Url.Content(item.foto)" alt="erro" />
+                        }
+                        else
+                        {
+
+
+                            <asp:LinkButton ID="ad_main_form" runat="server" OnClick="ad_button_Click"
+                    OnClientClick="Navigate('@Html.DisplayFor(modelItem => item.url)')" CausesValidation="False">
+                                <img width="80" src="@Url.Content(item.foto)" alt="erro" />
+                            </asp:LinkButton>
+
+
+
+
+
+                        }
+                    }
+
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.idanimal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.idrace)
+            </td>
+            <td>
+                <a href="@Html.DisplayFor(modelItem => item.url)" target="_blank">@Html.DisplayFor(modelItem => item.url)</a>
+            </td>
+            @if (User.IsInRole("Admin"))
+            {
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.idfood }) |
+                @Html.ActionLink("Details", "Details", new { id = item.idfood }) |
+                @Html.ActionLink("Print Details View To PDF", "PrintPartialViewToPdf", new { id = item.idfood }) |
+                @Html.ActionLink("Delete", "DeleteFood", new { id = item.idfood })
+            </td>
+            }
+        </tr>
+    }
+
+</table>
+</div>
+<input type="hidden" id="hfTableHTML" name="Table_HTML" />
+<hr />
+<button Onclick="Export()" >Submit</button>
+@* <asp:Button Text="Export" runat="server" OnClick="Export" OnClientClick="SetHTML()" /> *@
